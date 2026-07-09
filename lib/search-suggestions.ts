@@ -1,6 +1,6 @@
 export type SearchSuggestion = {
   title: string;
-  key: "domain" | "websiteAnalysis" | "content" | "keyword" | "insight";
+  key: "domain" | "websiteAnalysis" | "content" | "keyword" | "insight" | "rankTracker";
   content: string;
   link: string;
 };
@@ -35,5 +35,11 @@ export const searchSuggestions: SearchSuggestion[] = [
     key: "insight",
     content: "Check your site's speed insight and improve it.",
     link: "/",
+  },
+  {
+    title: "Rank Tracker",
+    key: "rankTracker",
+    content: "Track your Google keyword rankings daily and see trends over time.",
+    link: "/rank-tracker",
   },
 ];

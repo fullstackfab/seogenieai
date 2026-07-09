@@ -73,6 +73,23 @@ export const endpoints = {
       depth: 100,
     },
   }),
+  /**
+   * Rank Tracker's daily check — depth 30 (3 pricing units, $0.006/check at
+   * DataForSEO's live rate) instead of serpChecker's depth 100 (10 units,
+   * $0.02/check). Top-30 covers the vast majority of rank-tracking use and
+   * keeps this on the simple synchronous live endpoint rather than needing
+   * the async task_post/tasks_ready/task_get queue for the same cost.
+   */
+  rankCheck: (p: { keyword: string; domain: string; locationCode?: number; languageCode?: string }): DfsRequest => ({
+    path: "serp/google/organic/live/advanced",
+    body: {
+      keyword: p.keyword,
+      location_code: p.locationCode ?? US_LOCATION_CODE,
+      language_code: p.languageCode ?? DEFAULT_LANGUAGE,
+      device: "desktop",
+      depth: 30,
+    },
+  }),
   serpAnalyzer: (p: { keyword: string; country?: string }): DfsRequest => ({
     path: "serp/google/organic/live/advanced",
     body: {

@@ -7,6 +7,7 @@ import {
   PenLine,
   KeyRound,
   Zap,
+  LineChart,
   ArrowRight,
   Gift,
   type LucideIcon,
@@ -24,6 +25,7 @@ const CARD_STYLE: Record<
   content: { icon: PenLine, iconBg: "bg-violet-500", arrowBg: "bg-violet-500" },
   keyword: { icon: KeyRound, iconBg: "bg-amber-500", arrowBg: "bg-amber-500" },
   insight: { icon: Zap, iconBg: "bg-pink-500", arrowBg: "bg-pink-500" },
+  rankTracker: { icon: LineChart, iconBg: "bg-dark-100", arrowBg: "bg-dark-100" },
 };
 
 /** Home-page suggestion cards; "/"-linked cards select an in-place search mode instead of navigating. */

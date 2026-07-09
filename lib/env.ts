@@ -24,6 +24,7 @@ const serverEnvSchema = z.object({
   CONTACT_EMAIL_TO: z.string().email(),
   AUDIT_TOKEN_SECRET: z.string().min(16, "AUDIT_TOKEN_SECRET must be at least 16 chars"),
   APP_URL: z.string().url(),
+  CRON_SECRET: z.string().min(16, "CRON_SECRET must be at least 16 chars"),
 });
 
 export const env = serverEnvSchema.parse({
@@ -44,4 +45,5 @@ export const env = serverEnvSchema.parse({
   CONTACT_EMAIL_TO: process.env.CONTACT_EMAIL_TO,
   AUDIT_TOKEN_SECRET: process.env.AUDIT_TOKEN_SECRET,
   APP_URL: process.env.APP_URL,
+  CRON_SECRET: process.env.CRON_SECRET,
 });

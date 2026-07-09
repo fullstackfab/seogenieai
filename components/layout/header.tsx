@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSession, signIn, signOut } from "next-auth/react";
-import { FileBarChart, LogIn, Menu, X } from "lucide-react";
+import { FileBarChart, LineChart, LogIn, Menu, X } from "lucide-react";
 import { Container, Wrapper } from "@/components/ui/primitives";
 import { Text } from "@/components/ui/typography";
 import { NavHorizontal } from "@/components/layout/nav-horizontal";
@@ -178,6 +178,20 @@ export function Header() {
                         >
                           <FileBarChart className="h-4.5 w-4.5 text-gray-500" aria-hidden="true" />
                           My Reports
+                        </Link>
+                        <Link
+                          href="/rank-tracker/packs"
+                          onClick={() => setOpenNameMenu(false)}
+                          className="
+              flex items-center gap-2.5 rounded-lg
+              px-3 py-2.5
+              text-sm font-medium text-gray-700
+              transition-colors duration-150
+              hover:bg-gray-100 hover:text-gray-900
+            "
+                        >
+                          <LineChart className="h-4.5 w-4.5 text-gray-500" aria-hidden="true" />
+                          Rank Tracker
                         </Link>
                       </li>
 
