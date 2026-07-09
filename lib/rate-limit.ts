@@ -40,9 +40,13 @@ export function rateLimit(
   return { ok: true, retryAfterSeconds: 0 };
 }
 
+/** First hop of x-forwarded-for, or a fallback — shared by clientKey and the daily-limit helpers. */
+export function clientIp(request: Request): string {
+  const fwd = request.headers.get("x-forwarded-for");
+  return fwd ? fwd.split(",")[0].trim() : "unknown";
+}
+
 /** Client key for rate limiting: first hop of x-forwarded-for, or a fallback. */
 export function clientKey(request: Request, scope: string): string {
-  const fwd = request.headers.get("x-forwarded-for");
-  const ip = fwd ? fwd.split(",")[0].trim() : "unknown";
-  return `${scope}:${ip}`;
+  return `${scope}:${clientIp(request)}`;
 }

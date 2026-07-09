@@ -56,7 +56,7 @@ export function ContentWriterView() {
       keywords,
     });
     if (!result.success) {
-      showError("Couldn't generate content. Please try again.");
+      showError(result.error ?? "Couldn't generate content. Please try again.");
     }
   }
 

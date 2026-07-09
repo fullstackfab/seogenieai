@@ -35,7 +35,10 @@ export function useChatStream() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userPrompt, ...flags }),
       });
-      if (!res.ok || !res.body) throw new Error(res.statusText);
+      if (!res.ok || !res.body) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error ?? res.statusText);
+      }
 
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
@@ -47,9 +50,9 @@ export function useChatStream() {
         setAnswer(stripCodeFence(full));
       }
       return { success: true, answer: stripCodeFence(full) };
-    } catch {
+    } catch (err) {
       setFailed(true);
-      return { success: false, answer: "" };
+      return { success: false, answer: "", error: err instanceof Error ? err.message : undefined };
     } finally {
       setLoading(false);
     }

@@ -3,10 +3,13 @@ import { z } from "zod";
 import { endpoints } from "@/lib/dataforseo/endpoints";
 import { fetchDataForSeo } from "@/lib/dataforseo/client";
 import { normalizeKeywordSuggestions } from "@/lib/dataforseo/normalize";
-import { rateLimit, clientKey } from "@/lib/rate-limit";
+import { rateLimit, clientKey, clientIp } from "@/lib/rate-limit";
+import { checkDailyLimit } from "@/lib/daily-limit";
 import { logger } from "@/lib/logger";
 
 export const maxDuration = 60;
+
+const KEYWORD_PLANNER_DAILY_LIMIT = 2;
 
 const bodySchema = z.object({
   keyword: z.string().trim().min(1).max(1000),
@@ -49,6 +52,15 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { error: parsed.error.issues[0]?.message ?? "Invalid request body" },
       { status: 400 }
+    );
+  }
+
+  // Free but still spends real DataForSEO calls per search — cap it at 2 per IP per UTC day.
+  const daily = await checkDailyLimit("keyword-planner", clientIp(request), KEYWORD_PLANNER_DAILY_LIMIT);
+  if (!daily.ok) {
+    return NextResponse.json(
+      { error: "You've used today's 2 free searches for Keyword Planner. Please try again tomorrow." },
+      { status: 429 }
     );
   }
 

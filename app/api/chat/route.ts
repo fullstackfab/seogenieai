@@ -2,9 +2,12 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getAnthropic, CLAUDE_MODEL } from "@/lib/anthropic/client";
 import { buildChatPrompt } from "@/lib/anthropic/prompts";
-import { rateLimit, clientKey } from "@/lib/rate-limit";
+import { rateLimit, clientKey, clientIp } from "@/lib/rate-limit";
+import { checkDailyLimit } from "@/lib/daily-limit";
 import { getStripe } from "@/lib/stripe";
 import { logger } from "@/lib/logger";
+
+const CONTENT_WRITER_DAILY_LIMIT = 2;
 
 export const maxDuration = 120;
 
@@ -44,6 +47,18 @@ export async function POST(request: Request) {
       { error: parsed.error.issues[0]?.message ?? "Invalid request body" },
       { status: 400 }
     );
+  }
+
+  // Content Writer is free but still spends real Claude tokens per
+  // generate/regenerate click — cap it at 2 per IP per UTC day.
+  if (parsed.data.contentWriter) {
+    const daily = await checkDailyLimit("content-writer", clientIp(request), CONTENT_WRITER_DAILY_LIMIT);
+    if (!daily.ok) {
+      return NextResponse.json(
+        { error: "You've used today's 2 free generations for Content Writer. Please try again tomorrow." },
+        { status: 429 }
+      );
+    }
   }
 
   // The PageSpeed AI Report is a paid feature — require proof of a completed
