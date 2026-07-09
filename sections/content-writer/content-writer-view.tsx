@@ -118,6 +118,7 @@ export function ContentWriterView() {
           <button
             onClick={handleSave}
             disabled={saving}
+            aria-label="Save content"
             className="flex items-center gap-2 px-5 py-2.5 rounded-[10px] bg-violet-500 text-white font-medium hover:bg-violet-500/90 transition-colors duration-200 disabled:opacity-50"
           >
             <Bookmark className="w-4 h-4" aria-hidden="true" />
@@ -125,6 +126,7 @@ export function ContentWriterView() {
           </button>
           <button
             onClick={() => copy("text")}
+            aria-label="Copy content text"
             className="flex items-center gap-2 px-5 py-2.5 rounded-[10px] border-2 border-black/15 text-[#171717] font-medium hover:bg-black/5 transition-colors duration-200"
           >
             <Copy className="w-4 h-4" aria-hidden="true" />
@@ -132,6 +134,7 @@ export function ContentWriterView() {
           </button>
           <button
             onClick={() => copy("html")}
+            aria-label="Copy content HTML"
             className="flex items-center gap-2 px-5 py-2.5 rounded-[10px] border-2 border-black/15 text-[#171717] font-medium hover:bg-black/5 transition-colors duration-200"
           >
             <Code2 className="w-4 h-4" aria-hidden="true" />
@@ -140,6 +143,7 @@ export function ContentWriterView() {
           <button
             onClick={generate}
             disabled={loading}
+            aria-label="Regenerate content"
             className="flex items-center gap-2 px-5 py-2.5 rounded-[10px] bg-dark-100 text-white font-medium hover:bg-dark-100/90 transition-colors duration-200 disabled:opacity-50"
           >
             <RotateCcw className="w-4 h-4" aria-hidden="true" />
@@ -276,6 +280,7 @@ export function ContentWriterView() {
 
           <button
             type="submit"
+            aria-label="Generate content"
             className="flex items-center justify-center gap-2 max-md-mobile:p-6 p-4 w-full mt-6 text-center text-base font-semibold rounded-[10px] bg-dark-100 text-white cursor-pointer transition-colors duration-200 hover:bg-dark-100/90"
           >
             Generate Content

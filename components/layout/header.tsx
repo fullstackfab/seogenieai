@@ -34,8 +34,15 @@ export function Header() {
             </button>
           </Wrapper>
           <Wrapper className="min-w-[171px] max-lg:flex-1 max-md-tab:flex max-md-tab:justify-center">
-            <Link href="/">
-              <Image src="/images/SEOGenie.png" alt="SEOGENIE" width={171} height={36} />
+            <Link aria-label="Home" href="/">
+              <Image
+                src="/images/SEOGenie.png"
+                alt="SEOGENIE"
+                width={171}
+                height={36}
+                loading="eager"
+                fetchPriority="high"
+              />
             </Link>
           </Wrapper>
           <Wrapper className="max-3xl:w-full max-md-tab:hidden">
@@ -46,6 +53,7 @@ export function Header() {
               <Wrapper className="relative">
                 <button
                   type="button"
+                  aria-label="User menu"
                   onClick={() => setOpenNameMenu((v) => !v)}
                   onBlur={handleBlur}
                   className="
@@ -114,6 +122,7 @@ export function Header() {
                     <ul className="py-1.5">
                       <li>
                         <Link
+                          aria-label="Go to My Keywords"
                           href="/keyword-planner/collections"
                           onClick={() => setOpenNameMenu(false)}
                           className="
@@ -142,6 +151,7 @@ export function Header() {
                           My Keywords
                         </Link>
                         <Link
+                          aria-label="Go to My Content"
                           href="/content-writer/history"
                           onClick={() => setOpenNameMenu(false)}
                           className="
@@ -166,6 +176,7 @@ export function Header() {
                           My Content
                         </Link>
                         <Link
+                          aria-label="Go to My Reports"
                           href="/domain-analysis/reports"
                           onClick={() => setOpenNameMenu(false)}
                           className="
@@ -180,6 +191,7 @@ export function Header() {
                           My Reports
                         </Link>
                         <Link
+                          aria-label="Go to Rank Tracker"
                           href="/rank-tracker/packs"
                           onClick={() => setOpenNameMenu(false)}
                           className="
@@ -197,6 +209,7 @@ export function Header() {
 
                       <li className="mt-1 border-t border-gray-100 pt-1">
                         <button
+                          aria-label="Sign out"
                           type="button"
                           onClick={() => signOut({ callbackUrl: "/" })}
                           className="
@@ -227,6 +240,7 @@ export function Header() {
               </Wrapper>
             ) : (
               <button
+                aria-label="Sign up or log in"
                 onClick={() => signIn("google")}
                 className="pt-[7px] max-md-mobile:p-0! max-md-mobile:w-8 max-md-mobile:h-8 max-md-mobile:flex max-md-mobile:justify-center max-md-mobile:items-center pb-2 px-[21px] text-center block text-base leading-[21.28px] font-normal rounded-[9px] border border-dark-100 transition-colors duration-300 whitespace-nowrap bg-dark-100 text-white hover:bg-transparent hover:text-dark-100"
               >
@@ -252,6 +266,7 @@ export function Header() {
               {headerNav.map((item) => (
                 <li key={item.link}>
                   <Link
+                    aria-label={`Go to ${item.label}`}
                     href={item.link}
                     className="text-xl text-lightblue-100 font-semibold"
                     onClick={() => setMenuOpen(false)}

@@ -103,12 +103,14 @@ export function KeywordAnalyticsTable({ keywords = [] }: { keywords: KeywordItem
               type="text"
               placeholder="Search keyword..."
               value={search}
+              aria-label="Search keyword"
               onChange={(e) => setSearch(e.target.value)}
               className="border rounded-xl px-4 py-2 w-full sm:w-80 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <button
               type="button"
               onClick={handleDownload}
+              aria-label="Download CSV"
               disabled={filtered.length === 0}
               className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl bg-dark-100 text-white transition-colors duration-200 hover:bg-dark-100/90 disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
             >
@@ -156,6 +158,7 @@ export function KeywordAnalyticsTable({ keywords = [] }: { keywords: KeywordItem
                     <td className="px-4 py-3">
                       <button
                         onClick={() => setSelected(item)}
+                        aria-label={`View details for ${item.keyword}`}
                         className="px-3 py-1 text-xs bg-dark-100 rounded-[9px] border border-dark-100 transition-colors duration-300 whitespace-nowrap text-white hover:bg-transparent hover:text-dark-100"
                       >
                         View
@@ -176,7 +179,9 @@ export function KeywordAnalyticsTable({ keywords = [] }: { keywords: KeywordItem
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm">
               <div>
                 <p className="text-gray-500">Avg Volume</p>
-                <p className="font-semibold">{selected.avg_search_volume?.toLocaleString() ?? "—"}</p>
+                <p className="font-semibold">
+                  {selected.avg_search_volume?.toLocaleString() ?? "—"}
+                </p>
               </div>
               <div>
                 <p className="text-gray-500">CPC</p>
@@ -214,7 +219,9 @@ export function KeywordAnalyticsTable({ keywords = [] }: { keywords: KeywordItem
                 <div className="grid grid-cols-3 gap-4 text-sm">
                   <div className="bg-gray-50 rounded-xl p-4 text-center">
                     <p className="text-gray-500">Monthly</p>
-                    <p className="font-semibold text-base">{formatTrend(selected.search_volume_trend.monthly)}</p>
+                    <p className="font-semibold text-base">
+                      {formatTrend(selected.search_volume_trend.monthly)}
+                    </p>
                   </div>
                   <div className="bg-gray-50 rounded-xl p-4 text-center">
                     <p className="text-gray-500">Quarterly</p>
@@ -224,7 +231,9 @@ export function KeywordAnalyticsTable({ keywords = [] }: { keywords: KeywordItem
                   </div>
                   <div className="bg-gray-50 rounded-xl p-4 text-center">
                     <p className="text-gray-500">Yearly</p>
-                    <p className="font-semibold text-base">{formatTrend(selected.search_volume_trend.yearly)}</p>
+                    <p className="font-semibold text-base">
+                      {formatTrend(selected.search_volume_trend.yearly)}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -247,7 +256,9 @@ export function KeywordAnalyticsTable({ keywords = [] }: { keywords: KeywordItem
                         <tr key={i}>
                           <td className="px-4 py-2">{formatMonth(m.year, m.month)}</td>
                           <td className="px-4 py-2">{m.year}</td>
-                          <td className="px-4 py-2 font-medium">{m.search_volume?.toLocaleString()}</td>
+                          <td className="px-4 py-2 font-medium">
+                            {m.search_volume?.toLocaleString()}
+                          </td>
                         </tr>
                       ))}
                     </tbody>

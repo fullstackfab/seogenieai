@@ -24,10 +24,12 @@ export function Welcome() {
 
         <div className="relative mx-auto w-full max-w-150  max-md-mobile:max-w-70">
           <Image
-            src="/images/hero-dashboard.png"
+            src="/images/hero-dashboard.webp"
             alt="SEOGenieAI dashboard preview showing SEO score, organic traffic growth, and keyword rankings"
             fill
-            priority
+            sizes="(max-width: 600px) 280px, 600px"
+            fetchPriority="high"
+            loading="eager"
             className="object-contain static!"
           />
         </div>

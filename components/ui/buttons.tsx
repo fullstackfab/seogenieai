@@ -39,6 +39,7 @@ export function Button({
   return (
     <button
       {...rest}
+      aria-label={typeof children === "string" ? children : undefined}
       className={`${BASE} ${variant === "outlined" ? OUTLINED : SOLID} disabled:opacity-50 disabled:cursor-not-allowed ${className ?? ""}`}
     >
       {children}
@@ -68,6 +69,7 @@ export function BackToHomeClick({
   return (
     <button
       onClick={onclick}
+      aria-label={heading ?? "Back to home"}
       className={className ?? "text-base cursor-pointer uppercase font-semibold mb-6 inline-block"}
     >
       {icon} {heading ?? "Back to home"}

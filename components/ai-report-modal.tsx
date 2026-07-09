@@ -82,9 +82,14 @@ export function AiReportModal({
             type="button"
             onClick={handleDownload}
             disabled={downloading}
+            aria-label="Download PDF"
             className="flex items-center gap-2 bg-dark-100 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-dark-100/90 transition-colors disabled:opacity-60 mr-8"
           >
-            {downloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+            {downloading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Download className="w-4 h-4" />
+            )}
             {downloading ? "Preparing…" : "Download PDF"}
           </button>
         )}

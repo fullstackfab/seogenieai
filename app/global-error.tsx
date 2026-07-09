@@ -28,6 +28,7 @@ export default function GlobalError({
           </p>
           <button
             onClick={reset}
+            aria-label="Try again"
             className="pt-[7px] pb-2 px-[21px] text-center text-base font-normal rounded-[9px] border border-gray-900 bg-gray-900 text-white hover:bg-transparent hover:text-gray-900 transition-colors duration-300"
           >
             Try again

@@ -44,8 +44,8 @@ export function AiAuditLandingView() {
           </h1>
 
           <p className="text-gray-500 text-lg max-w-[500px] mx-auto mb-10 leading-relaxed">
-            Check how AI systems like ChatGPT, Gemini, and Perplexity see your site. Get an
-            instant readiness report — free, no signup needed.
+            Check how AI systems like ChatGPT, Gemini, and Perplexity see your site. Get an instant
+            readiness report — free, no signup needed.
           </p>
 
           <Wrapper className="relative mb-3">
@@ -59,6 +59,7 @@ export function AiAuditLandingView() {
             />
             <button
               onClick={handleSubmit}
+              aria-label="Analyze Website"
               className="absolute right-2 top-1/2 -translate-y-1/2 bg-dark-100 text-white px-6 py-2.5 rounded-[8px] text-sm font-semibold hover:bg-dark-100/90 transition-all duration-200 max-sm-tab:bottom-2 max-sm-tab:top-auto max-sm-tab:right-2 max-sm-tab:translate-y-0 max-sm-tab:w-[calc(100%-16px)]"
             >
               Analyze Website
@@ -72,6 +73,7 @@ export function AiAuditLandingView() {
             {EXAMPLE_SITES.map((site) => (
               <button
                 key={site}
+                aria-label={`Try example site: ${site}`}
                 onClick={() => setUrl(site)}
                 className="text-sm text-dark-100 underline underline-offset-2 opacity-60 hover:opacity-100 transition-opacity"
               >

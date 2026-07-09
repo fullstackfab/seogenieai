@@ -4,8 +4,16 @@ import { useState } from "react";
 import { LockOpen, Loader2 } from "lucide-react";
 
 const PAID_FEATURES = [
-  "DNS Hardening", "JSON-LD Schema", "HTML lang", "OG Locale", "sameAs Links",
-  "Canonical", "Hreflang", "Meta Robots", "AI Bot Directives", "AI Content Access",
+  "DNS Hardening",
+  "JSON-LD Schema",
+  "HTML lang",
+  "OG Locale",
+  "sameAs Links",
+  "Canonical",
+  "Hreflang",
+  "Meta Robots",
+  "AI Bot Directives",
+  "AI Content Access",
 ];
 
 export function UnlockBanner({ url }: { url: string }) {
@@ -60,7 +68,10 @@ export function UnlockBanner({ url }: { url: string }) {
           </p>
           <div className="flex flex-wrap gap-2 mt-4">
             {PAID_FEATURES.map((f) => (
-              <span key={f} className="text-xs bg-white/10 px-3 py-1 rounded-full whitespace-nowrap">
+              <span
+                key={f}
+                className="text-xs bg-white/10 px-3 py-1 rounded-full whitespace-nowrap"
+              >
                 {f}
               </span>
             ))}
@@ -89,6 +100,7 @@ export function UnlockBanner({ url }: { url: string }) {
           <button
             onClick={handleUnlock}
             disabled={loading}
+            aria-label="Get Full Report"
             className="w-full bg-white text-dark-100 font-bold py-3.5 rounded-xl text-sm hover:bg-white/90 transition-all duration-200 shadow-md disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {loading ? (
@@ -100,7 +112,9 @@ export function UnlockBanner({ url }: { url: string }) {
               "Get Full Report — $9.99 →"
             )}
           </button>
-          <p className="text-center text-xs text-white/40">Secured by Stripe · PDF delivered to your email</p>
+          <p className="text-center text-xs text-white/40">
+            Secured by Stripe · PDF delivered to your email
+          </p>
         </div>
       </div>
     </div>

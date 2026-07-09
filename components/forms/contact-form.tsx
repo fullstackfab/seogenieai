@@ -154,6 +154,7 @@ export function ContactForm({ onSuccess }: { onSuccess?: () => void }) {
       <button
         type="submit"
         disabled={loading}
+        aria-label="Submit contact form"
         className="disabled:cursor-not-allowed disabled:opacity-50 max-md-mobile:p-6 p-4 w-full mt-6 text-center block text-base leading-[21.28px] font-normal rounded-[9px] border border-dark-100 transition-colors duration-300 whitespace-nowrap bg-dark-100 text-white hover:bg-transparent hover:text-dark-100"
       >
         {loading ? "Submitting" : "Submit"}

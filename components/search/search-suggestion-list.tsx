@@ -114,6 +114,7 @@ function ProUpsellCard() {
         type="button"
         disabled
         title="Coming soon"
+        aria-label="Explore Plans (coming soon)"
         className="mt-4 rounded-[9px] border border-dark-100/30 px-4 py-2 text-[13px] font-semibold text-dark-100 opacity-60 cursor-not-allowed"
       >
         Explore Plans

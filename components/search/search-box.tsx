@@ -88,7 +88,10 @@ export function SearchBox({ value, refresh }: { value?: string; refresh?: boolea
       className="relative w-full mt-[14px] flex items-center gap-3 rounded-[14px] border-2 border-black/10 bg-white p-2 shadow-6xl max-md-mobile:flex-col max-md-mobile:items-stretch"
       onSubmit={submitForm}
     >
-      <Globe className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-[#94a3b8] max-md-mobile:hidden" aria-hidden="true" />
+      <Globe
+        className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-[#94a3b8] max-md-mobile:hidden"
+        aria-hidden="true"
+      />
       <Input
         disabled={disabled}
         placeholder={placeholder}
@@ -100,6 +103,7 @@ export function SearchBox({ value, refresh }: { value?: string; refresh?: boolea
         name="search"
       />
       <button
+        aria-label="Analyze Now"
         className="flex shrink-0 items-center justify-center gap-2 rounded-[10px] bg-dark-100 px-6 py-4 text-base font-semibold text-white cursor-pointer transition-colors duration-200 hover:bg-dark-100/90 disabled:cursor-not-allowed disabled:opacity-50"
         type="submit"
         disabled={disabled}

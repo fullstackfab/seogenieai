@@ -281,6 +281,7 @@ export function AiAuditReportView() {
           <button
             onClick={handleNewAnalysis}
             disabled={loading}
+            aria-label="Analyze another website"
             className="bg-dark-100 text-white px-6 py-2.5 rounded-lg text-sm font-semibold hover:bg-dark-100/90 transition-all disabled:opacity-50 whitespace-nowrap"
           >
             {loading ? "Analyzing…" : "Analyze →"}
@@ -334,18 +335,28 @@ export function AiAuditReportView() {
                   type="button"
                   onClick={handleDownloadPdf}
                   disabled={downloading}
+                  aria-label="Download Report PDF"
                   className="flex items-center gap-2 bg-dark-100 text-white text-sm font-semibold px-4 py-2.5 rounded-lg hover:bg-dark-100/90 transition-colors disabled:opacity-60"
                 >
-                  {downloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                  {downloading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Download className="w-4 h-4" />
+                  )}
                   {downloading ? "Preparing…" : "Download Report"}
                 </button>
                 <button
                   type="button"
                   onClick={handleResend}
                   disabled={resending}
+                  aria-label="Resend Report PDF to Email"
                   className="flex items-center gap-2 border-2 border-black/15 text-[#171717] text-sm font-semibold px-4 py-2.5 rounded-lg hover:bg-black/5 transition-colors disabled:opacity-60"
                 >
-                  {resending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
+                  {resending ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Mail className="w-4 h-4" />
+                  )}
                   {resending ? "Sending…" : "Resend Report"}
                 </button>
               </Wrapper>
