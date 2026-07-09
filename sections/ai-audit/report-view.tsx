@@ -21,8 +21,13 @@ const FREE_CHECKS = [
   { key: "robotsTxt", title: "robots.txt" },
   { key: "sitemap", title: "Sitemap" },
   { key: "h1", title: "H1 Headings" },
+  { key: "headings", title: "Heading Structure" },
   { key: "title", title: "HTML <title>" },
   { key: "metaDescription", title: "Meta Description" },
+  { key: "imageAlt", title: "Image Alt Text" },
+  { key: "favicon", title: "Favicon & Touch Icons" },
+  { key: "mixedContent", title: "Mixed Content" },
+  { key: "rssFeed", title: "RSS/Atom Feed" },
   { key: "viewport", title: "Mobile Viewport Meta" },
   { key: "openGraph", title: "Open Graph" },
   { key: "twitterCard", title: "Twitter Card" },
@@ -39,6 +44,14 @@ const PAID_CHECKS = [
   { key: "metaRobots", title: "Meta Robots" },
   { key: "aiRobots", title: "AI Robots Directives" },
   { key: "aiContentRestrictions", title: "AI Content Restrictions" },
+  { key: "llmsTxt", title: "llms.txt (AI Guidance)" },
+  { key: "securityTxt", title: "security.txt" },
+  { key: "sslCertificate", title: "SSL Certificate Health" },
+  { key: "httpHeaders", title: "Security & Perf Headers" },
+  { key: "redirectConsistency", title: "Redirect Consistency" },
+  { key: "soft404", title: "Soft-404 Handling" },
+  { key: "sitemapHealth", title: "Sitemap Health" },
+  { key: "linkHygiene", title: "Link Hygiene" },
 ];
 
 const TEASERS = [

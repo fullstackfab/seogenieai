@@ -1,5 +1,15 @@
 import "server-only";
-import { checkDns, checkRobotsTxt, checkSitemap, fetchHtml, normalizeUrl } from "@/lib/audit/fetchers";
+import {
+  checkDns,
+  checkRedirects,
+  checkRobotsTxt,
+  checkSitemap,
+  checkSoft404,
+  checkSslCertificate,
+  checkWellKnown,
+  fetchPage,
+  normalizeUrl,
+} from "@/lib/audit/fetchers";
 import { parseHtmlSignals } from "@/lib/audit/html-signals";
 import { buildFreeChecks } from "@/lib/audit/free-checks";
 import { buildLockedChecks } from "@/lib/audit/locked-checks";
@@ -13,6 +23,10 @@ const SCORED_KEYS = [
   "robotsTxt",
   "sitemap",
   "h1",
+  "headings",
+  "imageAlt",
+  "favicon",
+  "mixedContent",
   "openGraph",
   "twitterCard",
   "viewport",
@@ -26,6 +40,13 @@ const SCORED_KEYS = [
   "metaRobots",
   "aiRobots",
   "aiContentRestrictions",
+  "llmsTxt",
+  "sslCertificate",
+  "httpHeaders",
+  "redirectConsistency",
+  "soft404",
+  "sitemapHealth",
+  "linkHygiene",
 ];
 
 export function calculateScore(audit: Record<string, AuditCheck>): number {
@@ -41,25 +62,41 @@ export function calculateScore(audit: Record<string, AuditCheck>): number {
 }
 
 /**
- * The 19-check AI-readiness audit. Single source of truth — the legacy app
- * had this duplicated between lib/auditEngine.js and the route handler.
+ * The AI-readiness audit. Single source of truth — the legacy app had this
+ * duplicated between lib/auditEngine.js and the route handler. All data comes
+ * from free sources: the page itself, robots/sitemap/well-known fetches,
+ * dns.google, and a direct TLS handshake.
  */
 export async function runFullAudit(rawUrl: string) {
   const url = normalizeUrl(rawUrl);
   if (!url) throw new Error("Invalid URL");
   const domain = extractDomain(url);
 
-  const [html, robots, dns] = await Promise.all([
-    fetchHtml(url),
+  const [page, robots, dns, soft404, redirects, ssl, wellKnown] = await Promise.all([
+    fetchPage(url),
     checkRobotsTxt(url),
     checkDns(domain),
+    checkSoft404(url),
+    checkRedirects(url),
+    checkSslCertificate(domain),
+    checkWellKnown(url),
   ]);
   const sitemap = await checkSitemap(url, robots.raw ?? null);
 
-  const signals = parseHtmlSignals(html);
+  const signals = parseHtmlSignals(page.html, url);
   const audit: Record<string, AuditCheck> = {
     ...buildFreeChecks(url, signals, robots, sitemap),
-    ...buildLockedChecks(signals, robots, dns),
+    ...buildLockedChecks({
+      signals,
+      robots,
+      dns,
+      sitemap,
+      headers: page.headers,
+      soft404,
+      redirects,
+      ssl,
+      wellKnown,
+    }),
   };
 
   return {

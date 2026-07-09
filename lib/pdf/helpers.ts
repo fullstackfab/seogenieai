@@ -70,8 +70,13 @@ export const FREE_CHECKS = [
   { key: "robotsTxt", title: "robots.txt" },
   { key: "sitemap", title: "Sitemap" },
   { key: "h1", title: "H1 Headings" },
+  { key: "headings", title: "Heading Structure" },
   { key: "title", title: "HTML Title" },
   { key: "metaDescription", title: "Meta Description" },
+  { key: "imageAlt", title: "Image Alt Text" },
+  { key: "favicon", title: "Favicon & Touch Icons" },
+  { key: "mixedContent", title: "Mixed Content" },
+  { key: "rssFeed", title: "RSS/Atom Feed" },
   { key: "viewport", title: "Mobile Viewport" },
   { key: "openGraph", title: "Open Graph" },
   { key: "twitterCard", title: "Twitter Card" },
@@ -88,6 +93,14 @@ export const PAID_CHECKS = [
   { key: "metaRobots", title: "Meta Robots" },
   { key: "aiRobots", title: "AI Bot Directives" },
   { key: "aiContentRestrictions", title: "AI Content Access" },
+  { key: "llmsTxt", title: "llms.txt (AI Guidance)" },
+  { key: "securityTxt", title: "security.txt" },
+  { key: "sslCertificate", title: "SSL Certificate Health" },
+  { key: "httpHeaders", title: "Security & Perf Headers" },
+  { key: "redirectConsistency", title: "Redirect Consistency" },
+  { key: "soft404", title: "Soft-404 Handling" },
+  { key: "sitemapHealth", title: "Sitemap Health" },
+  { key: "linkHygiene", title: "Link Hygiene" },
 ];
 
 export function auditCard(title: string, item?: { status: string; value?: unknown; recommendation?: string }) {
