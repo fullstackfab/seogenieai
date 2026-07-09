@@ -12,7 +12,6 @@ import { AiReportModal } from "@/components/ai-report-modal";
 import { AiReportPaywall } from "./ai-report-paywall";
 import { useAnalysis } from "@/providers/analysis-provider";
 import { useToast } from "@/providers/toast-provider";
-import { useChatStream } from "@/lib/use-chat-stream";
 import { PageSpeedReport } from "./pagespeed-report";
 import type { PageInsights } from "./types";
 
@@ -21,6 +20,7 @@ type Strategy = "desktop" | "mobile";
 type CachedScan = {
   reports: Partial<Record<Strategy, PageInsights>>;
   analyticalPayload: unknown;
+  stripeSessionId?: string;
 };
 
 const cacheKey = (domain: string) => `insight-scan:${domain}`;
@@ -30,7 +30,6 @@ export function InsightView() {
   const { showError } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { answer, loading: reportLoading, run, setAnswer } = useChatStream();
   const [selected, setSelected] = useState<Strategy>("desktop");
   const [loading, setLoading] = useState(false);
   const [reports, setReports] = useState<Partial<Record<Strategy, PageInsights>>>({});
@@ -40,6 +39,12 @@ export function InsightView() {
   const [verifying, setVerifying] = useState(false);
   const [customerEmail, setCustomerEmail] = useState<string | null>(null);
   const [emailStatus, setEmailStatus] = useState<"idle" | "sending" | "sent" | "failed">("idle");
+
+  const [reportHtml, setReportHtml] = useState("");
+  const [reportUnlocked, setReportUnlocked] = useState(false);
+  const [reportChecked, setReportChecked] = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
 
   const analyse = useCallback(
     async (strategy: Strategy) => {
@@ -57,10 +62,12 @@ export function InsightView() {
         if (!res.ok) throw new Error(data?.error ?? "PageSpeed request failed");
         setReports((prev) => {
           const next = { ...prev, [strategy]: data.pageInsights };
-          sessionStorage.setItem(
-            cacheKey(domain),
-            JSON.stringify({ reports: next, analyticalPayload: data.report } satisfies CachedScan)
-          );
+          const cached: CachedScan = {
+            reports: next,
+            analyticalPayload: data.report,
+            stripeSessionId: sessionId ?? undefined,
+          };
+          sessionStorage.setItem(cacheKey(domain), JSON.stringify(cached));
           return next;
         });
         setAnalyticalPayload(data.report);
@@ -70,45 +77,15 @@ export function InsightView() {
         setLoading(false);
       }
     },
-    [domain, reports, showError]
-  );
-
-  const generateAiReport = useCallback(
-    async (paidSessionId: string) => {
-      const result = await run(JSON.stringify(analyticalPayload), {
-        pageSpeedInsights: true,
-        stripeSessionId: paidSessionId,
-      });
-      if (!result.success) {
-        showError("Couldn't generate the AI report. Please try again.");
-        return;
-      }
-      if (!customerEmail) return;
-      setEmailStatus("sending");
-      try {
-        const res = await fetch("/api/insight/email", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            html: result.answer,
-            domain,
-            email: customerEmail,
-            stripeSessionId: paidSessionId,
-          }),
-        });
-        setEmailStatus(res.ok ? "sent" : "failed");
-      } catch {
-        setEmailStatus("failed");
-      }
-    },
-    [analyticalPayload, customerEmail, domain, run, showError]
+    [domain, reports, sessionId, showError]
   );
 
   function handleViewAiReport() {
-    if (sessionId) {
-      void generateAiReport(sessionId);
+    if (reportUnlocked) {
+      setShowReportModal(true);
       return;
     }
+    if (sessionId) return; // generation already in flight (see effect below)
     setPaywallOpen(true);
   }
 
@@ -123,6 +100,7 @@ export function InsightView() {
         // eslint-disable-next-line react-hooks/set-state-in-effect -- hydrating from this tab's cached scan
         setReports(parsed.reports);
         setAnalyticalPayload(parsed.analyticalPayload);
+        if (parsed.stripeSessionId) setSessionId(parsed.stripeSessionId);
         return;
       } catch {
         // fall through to a fresh scan
@@ -132,7 +110,7 @@ export function InsightView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only re-run when the domain itself changes, not when `analyse` is recreated
   }, [domain]);
 
-  // Returning from Stripe Checkout — confirm payment, then auto-run the report once data is ready.
+  // Returning from Stripe Checkout — confirm payment, then let the cache-check/generate effects below take over.
   useEffect(() => {
     const paidSessionId = searchParams.get("session_id");
     if (!paidSessionId) return;
@@ -163,13 +141,75 @@ export function InsightView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- run once for the session_id present on load
   }, []);
 
+  // As soon as we know which paid session this is, check for an already-generated
+  // report before ever considering a (token-costly) generation call.
   useEffect(() => {
-    if (sessionId && analyticalPayload) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- triggers the streamed report + email send once payment + scan data are both ready
-      void generateAiReport(sessionId);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- fire once analytical payload + a confirmed session are both available
-  }, [sessionId, analyticalPayload]);
+    if (!sessionId || reportChecked) return;
+    let cancelled = false;
+    fetch(`/api/insight/report?stripeSessionId=${encodeURIComponent(sessionId)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (cancelled) return;
+        if (data.unlocked && data.html) {
+          setReportHtml(data.html);
+          setReportUnlocked(true);
+        }
+      })
+      .catch(() => {
+        // Non-fatal — the generate effect below will still run if this fails.
+      })
+      .finally(() => {
+        if (!cancelled) setReportChecked(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [sessionId, reportChecked]);
+
+  // Only generate (and only once) if the cache check above came back empty.
+  useEffect(() => {
+    if (!sessionId || !analyticalPayload || !reportChecked || reportUnlocked || generating) return;
+    let cancelled = false;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- kicks off report generation once the cache check confirms nothing exists yet
+    setGenerating(true);
+    fetch("/api/insight/report", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ domain, stripeSessionId: sessionId, analyticalPayload }),
+    })
+      .then((res) => res.json())
+      .then(async (data) => {
+        if (cancelled) return;
+        if (!data.success) {
+          showError(data.error ?? "Couldn't generate the AI report. Please try again.");
+          return;
+        }
+        setReportHtml(data.html);
+        setReportUnlocked(true);
+        if (!customerEmail) return;
+        setEmailStatus("sending");
+        try {
+          const emailRes = await fetch("/api/insight/email", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ html: data.html, domain, email: customerEmail, stripeSessionId: sessionId }),
+          });
+          if (!cancelled) setEmailStatus(emailRes.ok ? "sent" : "failed");
+        } catch {
+          if (!cancelled) setEmailStatus("failed");
+        }
+      })
+      .catch(() => {
+        if (!cancelled) showError("Couldn't generate the AI report. Please try again.");
+      })
+      .finally(() => {
+        if (!cancelled) setGenerating(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fire once analytical payload + a confirmed, unchecked session are both ready
+  }, [sessionId, analyticalPayload, reportChecked, reportUnlocked]);
 
   if (!domain) {
     return (
@@ -214,16 +254,18 @@ export function InsightView() {
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
                   type="button"
-                  disabled={reportLoading}
+                  disabled={generating}
                   onClick={handleViewAiReport}
                   className="flex items-center gap-2 pt-[7px] pb-2 px-[21px] text-center text-base leading-[21.28px] font-normal rounded-[9px] border border-dark-100 transition-colors duration-300 whitespace-nowrap bg-dark-100 text-white hover:bg-transparent hover:text-white disabled:opacity-50"
                 >
                   <Sparkles className="w-4 h-4" />
-                  {reportLoading
-                    ? "Loading report…"
-                    : sessionId
+                  {generating
+                    ? "Generating report…"
+                    : reportUnlocked
                       ? "View AI Report"
-                      : "Unlock AI Report"}
+                      : sessionId
+                        ? "Unlocking…"
+                        : "Unlock AI Report"}
                 </motion.button>
               </Wrapper>
 
@@ -278,9 +320,9 @@ export function InsightView() {
         </AnimatePresence>
         <AiReportPaywall open={paywallOpen} onClose={() => setPaywallOpen(false)} domain={domain} />
         <AiReportModal
-          open={!!answer}
-          onClose={() => setAnswer("")}
-          html={answer}
+          open={showReportModal}
+          onClose={() => setShowReportModal(false)}
+          html={reportHtml}
           domain={domain}
           stripeSessionId={sessionId}
           emailStatus={emailStatus}

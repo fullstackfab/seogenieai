@@ -1,15 +1,15 @@
 import "server-only";
-import DOMPurify from "isomorphic-dompurify";
+import sanitizeHtmlLib from "sanitize-html";
 import { esc } from "@/lib/pdf/helpers";
 
 /** Same allowlist as the client-side sanitizer, kept independent since this runs in the PDF worker, not the RSC boundary. */
 function sanitize(html: string): string {
-  return DOMPurify.sanitize(html, {
-    ALLOWED_TAGS: [
+  return sanitizeHtmlLib(html, {
+    allowedTags: [
       "a", "b", "i", "em", "strong", "p", "ul", "ol", "li", "br", "h1", "h2", "h3", "h4", "h5", "h6",
       "table", "thead", "tbody", "tr", "td", "th", "span", "div", "code", "pre",
     ],
-    ALLOWED_ATTR: ["href", "target", "rel"],
+    allowedAttributes: { "*": ["href", "target", "rel"] },
   });
 }
 
