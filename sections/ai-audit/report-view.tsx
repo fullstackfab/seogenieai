@@ -3,9 +3,10 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search, Check, Loader2, CircleX } from "lucide-react";
+import { Search, Check, Loader2, CircleX, Download, Mail } from "lucide-react";
 import { Container, Wrapper } from "@/components/ui/primitives";
 import { BackToHome } from "@/components/ui/buttons";
+import { useToast } from "@/providers/toast-provider";
 import { AuditCard, AuditCardLocked } from "./audit-card";
 import { ScoreHeader } from "./score-header";
 import { UnlockBanner } from "./unlock-banner";
@@ -85,6 +86,7 @@ function SkeletonCard() {
 export function AiAuditReportView() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { showError, showSuccess } = useToast();
   const urlParam = searchParams.get("url");
   const token = searchParams.get("token");
 
@@ -97,6 +99,9 @@ export function AiAuditReportView() {
   const [paidLoading, setPaidLoading] = useState(false);
   const [paidUnlocked, setPaidUnlocked] = useState(false);
   const [paidError, setPaidError] = useState<string | null>(null);
+
+  const [downloading, setDownloading] = useState(false);
+  const [resending, setResending] = useState(false);
 
   const [pdfStatus, setPdfStatus] = useState<string | null>(null);
   const [pdfStatusError, setPdfStatusError] = useState<string | null>(null);
@@ -207,6 +212,54 @@ export function AiAuditReportView() {
     router.push(`/ai-audit/report?url=${encodeURIComponent(trimmed)}`);
   }
 
+  async function handleDownloadPdf() {
+    if (!token || !urlParam) return;
+    setDownloading(true);
+    try {
+      const res = await fetch("/api/ai-audit/pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, url: urlParam }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error ?? "Failed to generate PDF");
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `ai-readiness-report-${(result?.domain ?? "report").replace(/[^a-z0-9.-]/gi, "-")}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      showError(err instanceof Error ? err.message : "Failed to generate PDF");
+    } finally {
+      setDownloading(false);
+    }
+  }
+
+  async function handleResend() {
+    if (!token || !urlParam) return;
+    setResending(true);
+    try {
+      const res = await fetch("/api/ai-audit/resend", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, url: urlParam }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error ?? "Failed to resend report");
+      showSuccess(`Report resent to ${data.email}`);
+    } catch (err) {
+      showError(err instanceof Error ? err.message : "Failed to resend report");
+    } finally {
+      setResending(false);
+    }
+  }
+
   const audit = result?.audit ?? null;
 
   return (
@@ -274,6 +327,29 @@ export function AiAuditReportView() {
               score={result.score}
               isPaid={paidUnlocked}
             />
+
+            {token && paidUnlocked && (
+              <Wrapper className="flex gap-3 flex-wrap -mt-2 mb-6">
+                <button
+                  type="button"
+                  onClick={handleDownloadPdf}
+                  disabled={downloading}
+                  className="flex items-center gap-2 bg-dark-100 text-white text-sm font-semibold px-4 py-2.5 rounded-lg hover:bg-dark-100/90 transition-colors disabled:opacity-60"
+                >
+                  {downloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                  {downloading ? "Preparing…" : "Download Report"}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleResend}
+                  disabled={resending}
+                  className="flex items-center gap-2 border-2 border-black/15 text-[#171717] text-sm font-semibold px-4 py-2.5 rounded-lg hover:bg-black/5 transition-colors disabled:opacity-60"
+                >
+                  {resending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
+                  {resending ? "Sending…" : "Resend Report"}
+                </button>
+              </Wrapper>
+            )}
 
             {token && pdfStatus && (
               <Wrapper className="flex items-center gap-2 -mt-4 mb-6 text-sm">

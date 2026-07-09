@@ -178,26 +178,38 @@ export function InsightView() {
       body: JSON.stringify({ domain, stripeSessionId: sessionId, analyticalPayload }),
     })
       .then((res) => res.json())
-      .then(async (data) => {
+      .then((data) => {
         if (cancelled) return;
         if (!data.success) {
           showError(data.error ?? "Couldn't generate the AI report. Please try again.");
           return;
         }
+        // The report is ready — show it immediately. Email delivery is fired
+        // separately below and never awaited here, so a slow/failed SMTP send
+        // (DNS hiccups, provider outage, etc.) can never block or hide the
+        // report the user already paid for.
         setReportHtml(data.html);
         setReportUnlocked(true);
+        setShowReportModal(true);
+
         if (!customerEmail) return;
         setEmailStatus("sending");
-        try {
-          const emailRes = await fetch("/api/insight/email", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ html: data.html, domain, email: customerEmail, stripeSessionId: sessionId }),
+        fetch("/api/insight/email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            html: data.html,
+            domain,
+            email: customerEmail,
+            stripeSessionId: sessionId,
+          }),
+        })
+          .then((emailRes) => {
+            if (!cancelled) setEmailStatus(emailRes.ok ? "sent" : "failed");
+          })
+          .catch(() => {
+            if (!cancelled) setEmailStatus("failed");
           });
-          if (!cancelled) setEmailStatus(emailRes.ok ? "sent" : "failed");
-        } catch {
-          if (!cancelled) setEmailStatus("failed");
-        }
       })
       .catch(() => {
         if (!cancelled) showError("Couldn't generate the AI report. Please try again.");
@@ -256,7 +268,7 @@ export function InsightView() {
                   type="button"
                   disabled={generating}
                   onClick={handleViewAiReport}
-                  className="flex items-center gap-2 pt-[7px] pb-2 px-[21px] text-center text-base leading-[21.28px] font-normal rounded-[9px] border border-dark-100 transition-colors duration-300 whitespace-nowrap bg-dark-100 text-white hover:bg-transparent hover:text-white disabled:opacity-50"
+                  className="flex items-center gap-2 pt-[7px] pb-2 px-[21px] text-center text-base leading-[21.28px] font-normal rounded-[9px] border border-dark-100 transition-colors duration-300 whitespace-nowrap bg-dark-100 text-white hover:bg-transparent hover:text-dark-100 disabled:opacity-50"
                 >
                   <Sparkles className="w-4 h-4" />
                   {generating
