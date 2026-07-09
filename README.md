@@ -1,6 +1,6 @@
 # SEOGenieAI
 
-AI-powered SEO & digital marketing platform — Next.js 14 App Router, TypeScript, Tailwind CSS, MongoDB/Mongoose, and Claude (Anthropic).
+AI-powered SEO & digital marketing platform — Next.js 16 App Router, TypeScript, Tailwind CSS, MongoDB/Mongoose, and Claude (Anthropic).
 
 ## Features
 
