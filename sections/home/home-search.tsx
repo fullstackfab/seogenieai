@@ -5,7 +5,6 @@ import { SearchBox } from "@/components/search/search-box";
 import { SearchSuggestionList } from "@/components/search/search-suggestion-list";
 
 const TRUST_BADGES = [
-  { icon: CreditCard, label: "No Credit Card Required" },
   { icon: Zap, label: "Instant Results" },
   { icon: Sparkles, label: "AI-Powered Insights" },
   { icon: ShieldCheck, label: "Secure & Private" },
