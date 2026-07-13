@@ -27,7 +27,7 @@ export function Welcome() {
             src="/images/hero-dashboard.webp"
             alt="SEOGenieAI dashboard preview showing SEO score, organic traffic growth, and keyword rankings"
             fill
-            sizes="(max-width: 600px) 280px, 600px"
+            sizes="(max-width: 600px) 280px, 500px"
             fetchPriority="high"
             loading="eager"
             className="object-contain static!"
