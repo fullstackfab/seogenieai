@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   },
   description:
     "Analyse your website traffic, domain authority, backlinks, keywords and AI visibility with SEOGenieAI's AI-powered SEO tools.",
-  verification: { google: "feUn5y4_AahF2iqvm1KUeqnJCbVUzQhuJiszt_1_xw4" },
+  verification: { google: "r7xjSLJarkwue_BDMo0KthksC_314dXzwLEmDGD88QE" },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
