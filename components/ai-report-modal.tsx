@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Sparkles, Download, Loader2, CircleCheck, CircleX } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
 import { sanitizeHtml } from "@/lib/sanitize-html";
+import "@/components/ai-report-content.css";
 
 type EmailStatus = "idle" | "sending" | "sent" | "failed";
 

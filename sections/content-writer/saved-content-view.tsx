@@ -8,6 +8,7 @@ import { Container, Wrapper } from "@/components/ui/primitives";
 import { BackToHome } from "@/components/ui/buttons";
 import { useToast } from "@/providers/toast-provider";
 import { sanitizeHtml } from "@/lib/sanitize-html";
+import "@/components/ai-report-content.css";
 
 export function SavedContentView({
   id,

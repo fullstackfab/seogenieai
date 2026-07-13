@@ -13,6 +13,7 @@ import { useContentSave } from "@/lib/use-content-save";
 import { useToast } from "@/providers/toast-provider";
 import { sanitizeHtml } from "@/lib/sanitize-html";
 import { useRouter } from "next/navigation";
+import "@/components/ai-report-content.css";
 
 const CONTENT_TYPES = [
   "Blog Post",

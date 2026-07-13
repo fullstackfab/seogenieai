@@ -8,6 +8,7 @@ import { SearchBox } from "@/components/search/search-box";
 import { useAnalysis } from "@/providers/analysis-provider";
 import { useChatStream } from "@/lib/use-chat-stream";
 import { sanitizeHtml } from "@/lib/sanitize-html";
+import "@/components/ai-report-content.css";
 
 /** Streams a free-text AI content response for the home search's "content" mode. */
 export function ResponseView() {
