@@ -37,8 +37,8 @@ export function Footer() {
           <Wrapper className="flex p-2 items-center justify-center rounded-b-xl bg-dark-100">
             <span className="text-white text-center">
               Designed and Developed by{" "}
-              <Link className="underline" href="https://devopmind.com" target="_blank">
-                DEVOPMIND
+              <Link className="underline" href="https://thefabcode.com" target="_blank">
+                The Fabcode IT Solutions LLP
               </Link>
             </span>
           </Wrapper>

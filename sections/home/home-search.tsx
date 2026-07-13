@@ -1,6 +1,6 @@
 "use client";
 
-import { CreditCard, Zap, Sparkles, ShieldCheck, Users, Target, Headphones } from "lucide-react";
+import { Zap, Sparkles, ShieldCheck, Users, Target, Headphones } from "lucide-react";
 import { SearchBox } from "@/components/search/search-box";
 import { SearchSuggestionList } from "@/components/search/search-suggestion-list";
 
